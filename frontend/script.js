@@ -20,7 +20,7 @@ $(document).ready(function() {
         formData.append('longitude', position.coords.longitude);
         // Send the data to the server
         $.ajax({
-          url: 'http://192.168.0.151:3000/reports', // The URL to your backend endpoint
+          url: process.env.SERVER_BACKEND_URL + '/reports', // The URL to your backend endpoint
           type: 'POST',
           data: formData,
           contentType: false,
@@ -51,7 +51,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Function to add a marker to the map for each report
 function addReportMarkers() {
   // Use jQuery to make a GET request to your server
-  $.getJSON('http://192.168.0.151:3000/reports', function(reports) {
+  $.getJSON(process.env.SERVER_BACKEND_URL + '/reports', function(reports) {
     // Loop through the array of reports
     reports.forEach(function(report) {
       // Create a marker on the map at the report's location
