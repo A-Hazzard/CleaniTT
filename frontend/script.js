@@ -1,9 +1,4 @@
 $(document).ready(function() {
-
-  // Define global variable to hold server URL
-  var serverUrl;
-
-  
     $('#reportForm').submit(function(e) {
       e.preventDefault();
   
@@ -22,8 +17,8 @@ $(document).ready(function() {
         console.log($('#photo')[0].files[0], 'is photo')
         formData.append('description', $('#description').val());
         formData.append('photo', $('#photo')[0].files[0]);
-        formData.append('latitude', position.coords.latitude);
-        formData.append('longitude', position.coords.longitude);
+        formData.append('latitude', 11.6918);
+        formData.append('longitude', -50.2225);
         // Send the data to the server
         $.ajax({
           url: 'https://map-scanner-1.onrender.com/reports', // The URL to your backend endpoint
@@ -47,38 +42,39 @@ $(document).ready(function() {
       });
     });
 
-    // ... existing document.ready and form submit code ...
 
-// Initialize the map
-var map = L.map('map').setView([10.6918, -61.2225], 10); // Set this to the default view of your preference
+    var map = L.map('map').setView([10.6918, -61.2225], 10);
 
-// Set up the OSM layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+    // Use a dark-themed tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
 
-// script.js
+  // Define a blue dot marker using a divIcon
+  var blueDot = L.divIcon({
+    className: 'blue-dot',
+    html: '<div></div>',
+    iconSize: [10, 10],
+    iconAnchor: [5, 5]
+  });;
 
-// Function to add a marker to the map for each report
-function addReportMarkers() {
-  // Use jQuery to make a GET request to your server
-  $.getJSON('https://map-scanner-1.onrender.com/reports', function(reports) {
-    // Loop through the array of reports
-    reports.forEach(function(report) {
-      // Create a marker on the map at the report's location
-      var marker = L.marker([report.latitude, report.longitude]).addTo(map);
-      // var marker = L.marker([report.latitude, report.longitude]).addTo(map);
-      
-      // Optionally, bind a popup to the marker with the report description and photo
-      marker.bindPopup(`<h3>Description</h3><p>${report.description}</p>
-                        <img src="${report.photo}" alt="Reported Image" style="width:100%;">`);
-    });
-  });
-}
+  // Function to add markers to the map
+  function addReportMarkers() {
+      // Fetch report data from the server
+      $.getJSON('https://map-scanner-1.onrender.com/reports', function(reports) {
+          reports.forEach(function(report) {
+              // Create a marker for each report using the blue dot icon
+              L.marker([report.latitude, report.longitude], { icon: blueDot }).addTo(map)
+                  .bindPopup(`<h3>Description</h3><p>${report.description}</p>
+                               <img src="${report.photo}" alt="Reported Image" style="width:100%;">`);
+          });
+      });
+  }
 
-// Call the function to add markers to the map
-addReportMarkers();
+  // Call the function to add markers to the map
+  addReportMarkers();
 
 
   });

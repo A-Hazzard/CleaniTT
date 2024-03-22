@@ -36,5 +36,16 @@ body {
         color: white;
     }
     }
+
+
+/* Add this to your stylesheet */
+.blue-dot div {
+  background-color: #3498db; /* Blue color */
+  border-radius: 50%; /* Circular shape */
+  width: 10px; /* Width of the dot */
+  height: 10px; /* Height of the dot */
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.5); /* Glowing effect */
+}
+
   }
   
