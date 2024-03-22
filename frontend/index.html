@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Environmental Activity</title>
+<link rel="stylesheet" href="styles.css">
+<!-- Include Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+</head>
+<body>
+<form id="reportForm">
+  <label for="description">Description:</label>
+  <textarea id="description" name="description" required></textarea>
+  <label for="photo">Photo:</label>
+  <input type="file" id="photo" name="photo" accept="image/*" required>
+  <input type="hidden" id="latitude" name="latitude">
+  <input type="hidden" id="longitude" name="longitude">
+  <button type="submit">Submit Report</button>
+
+  <!-- Add this somewhere in your body tag -->
+<div id="map" style="height: 400px;"></div>
+
+<!-- Existing form and scripts ... -->
+
+</form>
+<!-- Existing HTML -->
+
+<!-- Include Leaflet JS just before your script.js -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

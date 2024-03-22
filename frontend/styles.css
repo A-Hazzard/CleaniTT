@@ -1,0 +1,30 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+body form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+}
+body form label {
+  display: block;
+  margin-top: 20px;
+}
+body form input[type=file], body form textarea {
+  width: 100%;
+}
+body form button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+body form button:hover {
+  background-color: #449d44;
+}/*# sourceMappingURL=styles.css.map */
