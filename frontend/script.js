@@ -1,4 +1,9 @@
 $(document).ready(function() {
+
+  // Define global variable to hold server URL
+  var serverUrl;
+
+  
     $('#reportForm').submit(function(e) {
       e.preventDefault();
   
@@ -14,22 +19,29 @@ $(document).ready(function() {
   
         // Prepare form data for sending
         var formData = new FormData();
+        console.log($('#photo')[0].files[0], 'is photo')
         formData.append('description', $('#description').val());
         formData.append('photo', $('#photo')[0].files[0]);
         formData.append('latitude', position.coords.latitude);
         formData.append('longitude', position.coords.longitude);
         // Send the data to the server
         $.ajax({
-          url: process.env.SERVER_BACKEND_URL + '/reports', // The URL to your backend endpoint
+          url: 'https://map-scanner-1.onrender.com/reports', // The URL to your backend endpoint
           type: 'POST',
           data: formData,
           contentType: false,
           processData: false,
           success: function(data) {
             alert('Report submitted successfully!');
+             // Re-enable submit button and change its text back
+             $('#submitBtn').prop('disabled', false).text('Submit Report');
+             alert('Report submitted successfully!');
           },
           error: function(xhr, status, error) {
             console.log('An error occurred: ' + error, xhr, status);
+             // Re-enable submit button and change its text back
+             $('#submitBtn').prop('disabled', false).text('Submit Report');
+             console.log('An error occurred: ' + error, xhr, status);
           }
         });
       });
@@ -51,11 +63,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Function to add a marker to the map for each report
 function addReportMarkers() {
   // Use jQuery to make a GET request to your server
-  $.getJSON(process.env.SERVER_BACKEND_URL + '/reports', function(reports) {
+  $.getJSON('https://map-scanner-1.onrender.com/reports', function(reports) {
     // Loop through the array of reports
     reports.forEach(function(report) {
       // Create a marker on the map at the report's location
       var marker = L.marker([report.latitude, report.longitude]).addTo(map);
+      // var marker = L.marker([report.latitude, report.longitude]).addTo(map);
       
       // Optionally, bind a popup to the marker with the report description and photo
       marker.bindPopup(`<h3>Description</h3><p>${report.description}</p>

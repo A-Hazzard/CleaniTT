@@ -31,6 +31,10 @@ body {
           background-color: #449d44;
         }
       }
+      #submitBtn:disabled {
+        background-color: grey;
+        color: white;
+    }
     }
   }
   
