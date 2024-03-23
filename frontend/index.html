@@ -38,6 +38,23 @@
       <input type="hidden" id="longitude" name="longitude">
       <button type="submit" id="submitBtn">Submit Report</button>
     </form>
+
+    <form id="lazyReportForm" enctype="multipart/form-data">
+      <h2>Not at the location where you took the photo?</h2>
+    <p>Use this form to report using the photo's embedded location. Make sure location tags are enabled in your camera settings.</p>
+    <div class="important-note" style="background-color: lightorange;">
+      <p>Important: In order for this feature to work, your phone must have location services enabled for the camera app. <a href="guide-to-enable-location-tags.html" target="_blank">Here's how to do it.</a></p>
+    </div>
+       <!-- Same fields as the immediate report form -->
+       <label for="lazyDescription">Description:</label>
+       <textarea id="lazyDescription" name="description" required></textarea>
+ 
+       <label for="lazyPhoto">Photo:</label>
+       <input type="file" id="lazyPhoto" name="photo" accept="image/*" required>
+ 
+       <button type="submit" id="lazySubmitBtn">Submit Lazy Report</button>
+       <div id="lazy-error-message" style="color: red;"></div>
+    </form>
   </div>
   
   <div id="map"></div>

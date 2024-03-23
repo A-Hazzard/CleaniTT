@@ -72,11 +72,6 @@ router.post('/reports', upload.single('photo'), async (req, res) => {
     res.status(400).send('Error saving report: ' + error.message);
   }
 });
-
-
-
-
-
 // Route to get report data
 router.get('/reports', async (req, res) => {
   try {
@@ -89,13 +84,11 @@ router.get('/reports', async (req, res) => {
   }
 });
 
-
 function calculateClusters(reports, radius) {
   const clusters = [];
   const processedReportIds = new Set();
 
   reports.forEach(report => {
-    console.log(report)
     // Skip if this report has already been processed as part of a cluster
     if (processedReportIds.has(report._id.toString())) {
       return;
@@ -134,6 +127,55 @@ function calculateClusters(reports, radius) {
 
   return clusters;
 }
+
+router.post('/lazyReport', upload.single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      throw new Error('No file uploaded');
+    }
+
+    let { description } = req.body;
+    let photoBuffer = req.file.buffer; // Access the file buffer directly
+  // Parse the EXIF data
+    let parser = exifParser.create(photoBuffer);
+    let result = parser.parse();
+    console.log(parser, ' is parse')
+    console.log(result, ' is result')
+  // Check if EXIF data contains GPS info
+  if (!result.tags.GPSLatitude && !result.tags.GPSLongitude) {
+    console.log(`No Location found for image, 
+    insure you have location tag enabled on your camera`)
+    return res.status(400).send(`No Location found for image, 
+    insure you have location tag enabled on your camera`)
+  }
+
+  let latitude = result.tags.GPSLatitude;
+  let longitude = result.tags.GPSLongitude;
+    // Upload image buffer to Cloudinary using upload_stream
+    const uploadResponse = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream({ folder: "reports" }, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+      uploadStream.end(photoBuffer);
+    });
+
+    // Save Cloudinary URL in the database
+    const report = new Report({ 
+      description, 
+      photo: uploadResponse.secure_url, // Use the secure URL returned by Cloudinary
+      latitude, 
+      longitude 
+    });
+    await report.save();
+
+    res.status(201).send('Report saved');
+  } catch (error) {
+    console.error('Error saving report:', error.message);
+    res.status(400).send('Error saving report: ' + error.message);
+  }
+});
+
 
 
 module.exports = router;
