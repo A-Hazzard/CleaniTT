@@ -3,6 +3,7 @@ body, html {
   margin: 0;
   height: 100%;
   font-family: "Arial", sans-serif;
+  overflow: hidden;
 }
 
 .top-bar {
@@ -74,5 +75,6 @@ main .blue-dot div {
   main .sidebar {
     width: 100%;
     height: 50%;
+    margin-bottom: 20%;
   }
 }/*# sourceMappingURL=styles.css.map */
