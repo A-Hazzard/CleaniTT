@@ -4,7 +4,6 @@ const router = express.Router();
 const multer = require('multer');
 const Report = require('../models/report');
 const cloudinary = require('cloudinary').v2;
-const exifParser = require('exif-parser');
 require('dotenv').config();
 
 // const path = require('path')
@@ -36,16 +35,7 @@ router.post('/reports', upload.single('photo'), async (req, res) => {
 
     const { description, latitude, longitude } = req.body;
     const photoBuffer = req.file.buffer; // Access the file buffer directly
-    // Parse the EXIF data
-    const parser = exifParser.create(photoBuffer);
-    const result = parser.parse();
 
-    // Check if EXIF data contains GPS info
-    if (result.tags.GPSLatitude && result.tags.GPSLongitude) {
-      latitude = result.tags.GPSLatitude;
-      longitude = result.tags.GPSLongitude
-      console.log('Found meta location for photo', latitude, longitude)
-    }else console.error('No meta data found')
     // Upload image buffer to Cloudinary using upload_stream
     const uploadResponse = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream({ folder: "reports" }, (error, result) => {
