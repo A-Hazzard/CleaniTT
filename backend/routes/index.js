@@ -4,6 +4,9 @@ const router = express.Router();
 const multer = require('multer');
 const Report = require('../models/report');
 const cloudinary = require('cloudinary').v2;
+const geolib = require('geolib');
+const exifParser = require('exif-parser');
+
 require('dotenv').config();
 
 // const path = require('path')
@@ -33,8 +36,17 @@ router.post('/reports', upload.single('photo'), async (req, res) => {
       throw new Error('No file uploaded');
     }
 
-    const { description, latitude, longitude } = req.body;
-    const photoBuffer = req.file.buffer; // Access the file buffer directly
+    let { description, latitude, longitude } = req.body;
+    let photoBuffer = req.file.buffer; // Access the file buffer directly
+  // Parse the EXIF data
+    let parser = exifParser.create(photoBuffer);
+    let result = parser.parse();
+
+  // Check if EXIF data contains GPS info
+  if (result.tags.GPSLatitude && result.tags.GPSLongitude) {
+    latitude = result.tags.GPSLatitude;
+    longitude = result.tags.GPSLongitude;
+  }else console.log('using current location instead of meta data from image')
 
     // Upload image buffer to Cloudinary using upload_stream
     const uploadResponse = await new Promise((resolve, reject) => {
@@ -69,11 +81,59 @@ router.post('/reports', upload.single('photo'), async (req, res) => {
 router.get('/reports', async (req, res) => {
   try {
     const reports = await Report.find({});
-    console.log('Got reports', reports);
-    res.json(reports);
+    const clusters = calculateClusters(reports, 50);
+    res.json({ reports, clusters });
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');
   }
 });
+
+
+function calculateClusters(reports, radius) {
+  const clusters = [];
+  const processedReportIds = new Set();
+
+  reports.forEach(report => {
+    console.log(report)
+    // Skip if this report has already been processed as part of a cluster
+    if (processedReportIds.has(report._id.toString())) {
+      return;
+    }
+
+    const nearbyReports = reports.filter(otherReport => {
+      // Do not compare the report with itself and skip already processed reports
+      return report._id.toString() !== otherReport._id.toString() &&
+             !processedReportIds.has(otherReport._id.toString()) &&
+             geolib.isPointWithinRadius(
+               { latitude: report.latitude, longitude: report.longitude },
+               { latitude: otherReport.latitude, longitude: otherReport.longitude },
+               radius
+             );
+    });
+
+    // If at least 2 other reports are in the same area (3 reports make a cluster)
+    if (nearbyReports.length >= 2) {
+      // Mark all reports in this cluster as processed
+      nearbyReports.forEach(nr => processedReportIds.add(nr._id.toString()));
+      processedReportIds.add(report._id.toString());
+      
+      // Add the original report to the list
+      nearbyReports.push(report);
+
+      // Calculate the center point of the cluster
+      const averageCoords = geolib.getCenter(nearbyReports.map(r => ({ latitude: r.latitude, longitude: r.longitude })));
+
+      // Add cluster to list
+      clusters.push({
+        center: averageCoords,
+        count: nearbyReports.length
+      });
+    }else console.log('no nearby reports')
+  });
+
+  return clusters;
+}
+
+
 module.exports = router;

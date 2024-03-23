@@ -3,33 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Report Environmental Activity</title>
+<title>Open Litter Data Explorer</title>
 <link rel="stylesheet" href="styles.css">
-<!-- Include Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
-<form id="reportForm"  enctype="multipart/form-data">
-  <label for="description">Description:</label>
-  <textarea id="description" name="description" required></textarea>
-  <label for="photo">Photo:</label>
-  <input type="file" id="photo" name="photo" accept="image/*" required>
-  <input type="hidden" id="latitude" name="latitude">
-  <input type="hidden" id="longitude" name="longitude">
-  <button type="submit">Submit Report</button>
+<div class="top-bar">
+  <button class="menu-button">☰ Menu</button>
+  <input type="text" placeholder="Find address or place" class="search-box">
+</div>
 
-  <!-- Add this somewhere in your body tag -->
-<div id="map" style="height: 400px;"></div>
+<main>
+  <div class="sidebar">
+    <form id="reportForm" enctype="multipart/form-data">
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" required></textarea>
+  
+      <fieldset>
+        <legend>Photo:</legend>
+        <label for="photoFromStorage">
+          <input type="radio" name="photoSource" id="photoFromStorage" checked> Choose from storage
+        </label>
+        <br>
+        <label for="photoFromCamera">
+          <input type="radio" name="photoSource" id="photoFromCamera"> Take a photo
+        </label>
+        <input type="file" id="photo" name="photo" accept="image/*" required>
+      </fieldset>
+  
+      <input type="hidden" id="latitude" name="latitude">
+      <input type="hidden" id="longitude" name="longitude">
+      <button type="submit" id="submitBtn">Submit Report</button>
+    </form>
+  </div>
+  
+  <div id="map"></div>
+</main>
 
-<!-- Existing form and scripts ... -->
-
-</form>
-<!-- Existing HTML -->
-
-<!-- Include Leaflet JS just before your script.js -->
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

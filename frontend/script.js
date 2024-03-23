@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  
     $('#reportForm').submit(function(e) {
       e.preventDefault();
   
@@ -14,14 +15,13 @@ $(document).ready(function() {
   
         // Prepare form data for sending
         var formData = new FormData();
-        console.log($('#photo')[0].files[0], 'is photo')
         formData.append('description', $('#description').val());
         formData.append('photo', $('#photo')[0].files[0]);
-        formData.append('latitude', 11.6918);
-        formData.append('longitude', -50.2225);
+        formData.append('latitude', position.coords.latitude);
+        formData.append('longitude', position.coords.longitude);
         // Send the data to the server
         $.ajax({
-          url: 'https://map-scanner-1.onrender.com/reports', // The URL to your backend endpoint
+          url: 'http://localhost:3000/reports', // The URL to your backend endpoint
           type: 'POST',
           data: formData,
           contentType: false,
@@ -43,7 +43,7 @@ $(document).ready(function() {
     });
 
 
-    var map = L.map('map').setView([10.6918, -61.2225], 10);
+    var map = L.map('map').setView([10.4918, -61.3225], 11);
 
     // Use a dark-themed tile layer
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -60,18 +60,43 @@ $(document).ready(function() {
     iconAnchor: [5, 5]
   });;
 
-  // Function to add markers to the map
   function addReportMarkers() {
-      // Fetch report data from the server
-      $.getJSON('https://map-scanner-1.onrender.com/reports', function(reports) {
-          reports.forEach(function(report) {
-              // Create a marker for each report using the blue dot icon
-              L.marker([report.latitude, report.longitude], { icon: blueDot }).addTo(map)
-                  .bindPopup(`<h3>Description</h3><p>${report.description}</p>
-                               <img src="${report.photo}" alt="Reported Image" style="width:100%;">`);
-          });
+    // Fetch report data from the server
+    $.getJSON('http://localhost:3000/reports', function(data) {
+      const { reports, clusters } = data;
+      console.log(reports, clusters)
+      // First, add markers for each report
+      reports.forEach(function(report) {
+        var marker = L.marker([report.latitude, report.longitude], { icon: blueDot }).addTo(map)
+          .bindPopup(`<h3>Description</h3><p>${report.description}</p>
+                       <img src="${report.photo}" alt="Reported Image" style="width:100%;">`);
+        
+        // Modify here to use flyTo
+        marker.on('click', function(e) {
+          map.flyTo(e.latlng, 18); // Use flyTo for a smooth zoom effect
+        });
       });
+  
+      // Then, visualize the high-priority zones
+      clusters.forEach(function(zone) {
+        var circle = L.circle([zone.center.latitude, zone.center.longitude], {
+          color: 'red',
+          fillColor: '#f03',
+          fillOpacity: 0.5,
+          radius: 80 // Adjust the radius as needed
+        }).addTo(map);
+        
+        // Modify here to use flyTo
+        circle.on('click', function(e) {
+          map.flyTo(e.latlng, 18); // Use flyTo for a smooth zoom effect
+        });
+      });
+    });
   }
+  
+  // Make sure to call this function to add markers and circles to the map
+  addReportMarkers();
+  
 
   // Call the function to add markers to the map
   addReportMarkers();
