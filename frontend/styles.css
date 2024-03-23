@@ -3,7 +3,7 @@ body, html {
   margin: 0;
   height: 100%;
   font-family: "Arial", sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .top-bar {
@@ -71,10 +71,11 @@ main .blue-dot div {
 @media (max-width: 768px) {
   main {
     flex-direction: column;
+    height: 100vh;
+    margin-bottom: 10%;
   }
   main .sidebar {
     width: 100%;
-    height: 50%;
-    margin-bottom: 20%;
+    height: auto;
   }
 }/*# sourceMappingURL=styles.css.map */
