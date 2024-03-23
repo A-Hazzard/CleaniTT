@@ -1,5 +1,6 @@
 $(document).ready(function() {
-  
+  //  const url = 'http://localhost:3000'
+   const url = 'https://map-scanner-1.onrender.com'
     $('#reportForm').submit(function(e) {
       e.preventDefault();
   
@@ -52,7 +53,7 @@ $(document).ready(function() {
 
   // Send the data to the server with a different endpoint
   $.ajax({
-    url: 'http://localhost:3000/lazyReport', // Replace with your server URL
+    url: url+'/lazyReport', // Replace with your server URL
     type: 'POST',
     data: formData,
     contentType: false,
@@ -96,7 +97,7 @@ $(document).ready(function() {
 
       function addReportMarkers() {
         // Fetch report data from the server
-        $.getJSON('http://localhost:3000/reports', function(data) {
+        $.getJSON(url+'/reports', function(data) {
           const { reports, clusters } = data;
           console.log(reports, clusters)
           // First, add markers for each report
