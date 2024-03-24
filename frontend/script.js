@@ -1,91 +1,59 @@
 $(document).ready(function() {
   //  const url = 'http://localhost:3000'
    const url = 'https://map-scanner-1.onrender.com'
-    $('#reportForm').submit(function(e) {
-      e.preventDefault();
-  
-      // Check if geolocation is available
-      if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser');
+   
+   $('#reportForm').submit(function(e) {
+    e.preventDefault();
+
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var formData = new FormData();
+      formData.append('description', $('#description').val());
+      formData.append('latitude', position.coords.latitude.toString());
+      formData.append('longitude', position.coords.longitude.toString());
+
+      // Determine which file input is being used
+      var fileInput = $('#photoFromCamera').get(0).files.length ? $('#photoFromCamera').get(0) : $('#photoFromStorage').get(0);
+
+      // Append the selected photo to formData
+      if (fileInput.files.length > 0) {
+        formData.append('photo', fileInput.files[0]);
+      } else {
+        alert('Please select a photo.');
         return;
       }
-  
-      navigator.geolocation.getCurrentPosition(function(position) {
-        $('#latitude').val(position.coords.latitude);
-        $('#longitude').val(position.coords.longitude);
-  
-        // Prepare form data for sending
-        var formData = new FormData();
-        formData.append('description', $('#description').val());
-        formData.append('photo', $('#photo')[0].files[0]);
-        formData.append('latitude', position.coords.latitude);
-        formData.append('longitude', position.coords.longitude);
-        // Send the data to the server
-        $.ajax({
-          url: 'http://localhost:3000/reports', // The URL to your backend endpoint
-          type: 'POST',
-          data: formData,
-          contentType: false,
-          processData: false,
-          success: function(data) {
-            alert('Report submitted successfully!');
-             // Re-enable submit button and change its text back
-             $('#submitBtn').prop('disabled', false).text('Submit Report');
-             alert('Report submitted successfully!');
-          },
-          error: function(xhr, status, error) {
-            console.log('An error occurred: ' + error, xhr, status);
-             // Re-enable submit button and change its text back
-             $('#submitBtn').prop('disabled', false).text('Submit Report');
-             console.log('An error occurred: ' + error, xhr, status);
-          }
-        });
-      });
-    });
-    // Submission for Lazy Reports
-    $('#lazyReportForm').submit(function(e) {
-      e.preventDefault();
 
-      // Clear any previous error messages
-      $('#lazy-error-message').text('');
-
-      var formData = new FormData(this); // 'this' refers to the form being submitted
-
-      // Send the data to the server with a different endpoint
       $.ajax({
-        url: url+'/lazyReport', // Replace with your server URL
+        url: url + '/reports',
         type: 'POST',
         data: formData,
         contentType: false,
         processData: false,
         success: function(data) {
-          alert('Lazy report submitted successfully!');
-          // Clear the form inputs after successful submission
-          $('#lazyDescription').val('');
-          $('#lazyPhoto').val('');
+          alert('Report submitted successfully!');
+          // Reset the form or perform other actions after successful submission
         },
-        error: function(xhr) {
-          // If the server responded with a status other than 2xx
-          if(xhr.status === 400){
-            // Display error message if location data is missing
-            $('#lazy-error-message').text('Error: Location data not found in image. Please make sure location tags are enabled.');
-          } else {
-            // Generic error message for other issues
-            $('#lazy-error-message').text('An error occurred while submitting your report. Please try again.');
-          }
+        error: function(xhr, status, error) {
+          console.error('An error occurred:', error);
+          alert('An error occurred while submitting your report. Please try again.');
         }
       });
+    }, function(error) {
+      alert('Error getting geolocation: ' + error.message);
     });
+  });
 
-    $('#photoFromCamera').on('change', function() {
-      if (this.files && this.files[0]) {
-        // Get the file name
-        const fileName = this.files[0].name;
-        // Display the file name next to the camera icon
-        $('#photoName').text(" " + fileName);
-      }
-    });
-    
+  // Handle file name display for the camera input
+  $('#photoFromCamera').on('change', function() {
+    if (this.files && this.files.length > 0) {
+      const fileName = this.files[0].name;
+      $('#photoName').text(" " + fileName);
+    }
+  });
     function createMap(){
       var map = L.map('map').setView([10.4918, -61.3225], 11);
 
