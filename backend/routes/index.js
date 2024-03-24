@@ -7,7 +7,8 @@ const cloudinary = require('cloudinary').v2;
 const geolib = require('geolib');
 const exifParser = require('exif-parser');
 const ExifReader = require('exifreader');
-
+const User = require('../models/user');
+const Activity = require('../models/activity');
 require('dotenv').config();
 
 cloudinary.config({ 
@@ -18,24 +19,48 @@ cloudinary.config({
 
 
 const upload = multer({ storage: multer.memoryStorage() }); // Multer configuration with memory storage
-
+// Define difficulty levels and points per material
+const difficultyLevels = {
+  'metal': 10,     // Adjust points based on difficulty
+  'plastic': 5,
+  // Add more materials and their corresponding points as needed
+};
 router.post('/reports', upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) {
       throw new Error('No file uploaded');
     }
 
-    let { description, latitude, longitude } = req.body;
+    let { description, latitude, longitude, materials } = req.body;
+
+    if (!materials || typeof materials !== 'object') {
+      throw new Error('Invalid materials data');
+    }
+
     let photoBuffer = req.file.buffer; // Access the file buffer directly
-  // Parse the EXIF data
+
+    // Calculate total points earned based on reported waste materials
+    let totalPoints = 0;
+    for (const material of Object.keys(materials)) {
+      if (difficultyLevels.hasOwnProperty(material)) {
+        totalPoints += materials[material] * difficultyLevels[material];
+      }
+    }
+
+    // Update user's points
+    await User.findByIdAndUpdate(req.user._id, { $inc: { points: totalPoints } });
+
+    // Save activity
+    await Activity.create({
+      userId: req.user._id,
+      type: 'report',
+      points: totalPoints,
+      // Additional fields as needed
+    });
+
+    // Parse the EXIF data
     let parser = exifParser.create(photoBuffer);
     let result = parser.parse();
-
-  // Check if EXIF data contains GPS info
-  if (result.tags.GPSLatitude && result.tags.GPSLongitude) {
-    latitude = result.tags.GPSLatitude;
-    longitude = result.tags.GPSLongitude;
-  }else console.log('using current location instead of meta data from image')
 
     // Upload image buffer to Cloudinary using upload_stream
     const uploadResponse = await new Promise((resolve, reject) => {
@@ -61,6 +86,7 @@ router.post('/reports', upload.single('photo'), async (req, res) => {
     res.status(400).send('Error saving report: ' + error.message);
   }
 });
+
 // Route to get report data
 router.get('/reports', async (req, res) => {
   try {
@@ -184,6 +210,83 @@ router.post('/lazyReport', upload.single('photo'), async (req, res) => {
   }
 });
 
+// Route to get user profile
+router.get('/profile', async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const user = await User.findById(userId);
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error.message);
+    res.status(500).send('Server error');
+  }
+});
 
+// Update User Profile
+router.put('/user/:id', async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedUser) {
+      return res.status(404).send('User not found');
+    }
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+
+// Register route
+router.post('/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      console.error('User already exists')
+      return res.status(400).send('User already exists');
+    }
+
+    // Create new user
+    const newUser = new User({ username, email, password });
+
+    // Save user to database
+    await newUser.save();
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error('Error registering user:', error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.error('Invalid email')
+      return res.status(400).send('Invalid credentials');
+    }
+
+    // Compare passwords
+    if (user.password !== password) {
+      console.error('Invalid password')
+      return res.status(400).send('Invalid credentials');
+    }
+    console.log('logged in')
+    // Redirect to frontend/index.html upon successful login
+    res.status(200).json(user)
+  } catch (error) {
+    console.error('Error logging in user:', error.message);
+    res.status(500).send('Server error');
+  }
+});
 
 module.exports = router;

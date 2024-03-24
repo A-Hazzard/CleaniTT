@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Custom styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .profile-card {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .profile-picture {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      overflow: hidden;
+    }
+    .profile-picture img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+<div class="profile-card">
+  <div class="profile-picture">
+    <img src="default.webp" alt="">
+  </div>
+  <div id="userData" class="text-center">
+    <!-- User data will be rendered here -->
+  </div>
+  
+  <div class="text-center mb-3">
+    <input type="file" id="profileImage" accept="image/*" style="display: none;">
+    <label for="profileImage" class="btn btn-primary">Upload Profile Picture</label>
+  </div>
+  <div class="text-center">
+    <a href="#" class="btn btn-secondary">Edit Profile</a>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+ // Fetch user data from the server
+$(document).ready(function() {
+  // Get the user ID from localStorage
+  const userId = JSON.parse(localStorage.getItem('user'))._id;
+
+  // Make AJAX request to fetch user profile
+  $.ajax({
+    url: 'http://localhost:3000/profile',
+    method: 'GET',
+    data: { userId: userId }, // Send user ID in the request body
+    success: function(user) {
+      console.log(user)
+      renderUserData(user);
+    },
+    error: function(xhr, status, error) {
+      console.error('Error fetching user data:', error);
+    }
+  });
+});
+
+// Function to render user data on the page
+function renderUserData(userData) {
+  $('#userData').html(`
+    <p>Username: ${userData?.username}</p>
+    <p>Points: ${userData?.points}</p>
+  `);
+}
+
+</script>
+
+</body>
+</html>
