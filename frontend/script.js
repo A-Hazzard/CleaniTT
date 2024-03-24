@@ -1,6 +1,6 @@
 $(document).ready(function() {
-  //  const url = 'http://localhost:3000'
-   const url = 'https://map-scanner-1.onrender.com'
+   const url = 'http://localhost:3000'
+  //  const url = 'https://map-scanner-1.onrender.com'
     $('#reportForm').submit(function(e) {
       e.preventDefault();
   
@@ -42,41 +42,50 @@ $(document).ready(function() {
         });
       });
     });
- // Submission for Lazy Reports
- $('#lazyReportForm').submit(function(e) {
-  e.preventDefault();
+    // Submission for Lazy Reports
+    $('#lazyReportForm').submit(function(e) {
+      e.preventDefault();
 
-  // Clear any previous error messages
-  $('#lazy-error-message').text('');
+      // Clear any previous error messages
+      $('#lazy-error-message').text('');
 
-  var formData = new FormData(this); // 'this' refers to the form being submitted
+      var formData = new FormData(this); // 'this' refers to the form being submitted
 
-  // Send the data to the server with a different endpoint
-  $.ajax({
-    url: url+'/lazyReport', // Replace with your server URL
-    type: 'POST',
-    data: formData,
-    contentType: false,
-    processData: false,
-    success: function(data) {
-      alert('Lazy report submitted successfully!');
-      // Clear the form inputs after successful submission
-      $('#lazyDescription').val('');
-      $('#lazyPhoto').val('');
-    },
-    error: function(xhr) {
-      // If the server responded with a status other than 2xx
-      if(xhr.status === 400){
-        // Display error message if location data is missing
-        $('#lazy-error-message').text('Error: Location data not found in image. Please make sure location tags are enabled.');
-      } else {
-        // Generic error message for other issues
-        $('#lazy-error-message').text('An error occurred while submitting your report. Please try again.');
+      // Send the data to the server with a different endpoint
+      $.ajax({
+        url: url+'/lazyReport', // Replace with your server URL
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(data) {
+          alert('Lazy report submitted successfully!');
+          // Clear the form inputs after successful submission
+          $('#lazyDescription').val('');
+          $('#lazyPhoto').val('');
+        },
+        error: function(xhr) {
+          // If the server responded with a status other than 2xx
+          if(xhr.status === 400){
+            // Display error message if location data is missing
+            $('#lazy-error-message').text('Error: Location data not found in image. Please make sure location tags are enabled.');
+          } else {
+            // Generic error message for other issues
+            $('#lazy-error-message').text('An error occurred while submitting your report. Please try again.');
+          }
+        }
+      });
+    });
+
+    $('#photoFromCamera').on('change', function() {
+      if (this.files && this.files[0]) {
+        // Get the file name
+        const fileName = this.files[0].name;
+        // Display the file name next to the camera icon
+        $('#photoName').text(" " + fileName);
       }
-    }
-  });
-});
-
+    });
+    
     function createMap(){
       var map = L.map('map').setView([10.4918, -61.3225], 11);
 

@@ -6,6 +6,7 @@
 <title>Open Litter Data Explorer</title>
 <link rel="stylesheet" href="styles.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -21,19 +22,20 @@
     <form id="reportForm" enctype="multipart/form-data">
       <label for="description">Description:</label>
       <textarea id="description" name="description" required></textarea>
-  
+    
       <fieldset>
         <legend>Photo:</legend>
-        <label for="photoFromStorage">
-          <input type="radio" name="photoSource" id="photoFromStorage" checked> Choose from storage
-        </label>
-        <br>
-        <label for="photoFromCamera">
-          <input type="radio" name="photoSource" id="photoFromCamera"> Take a photo
-        </label>
-        <input type="file" id="photo" name="photo" accept="image/*" required>
+    
+        <!-- This is your "Choose from storage" input -->
+        <label for="photoFromStorage" class="btn">Choose from storage</label>
+        <input type="file" id="photoFromStorage" name="photo" accept="image/*">
+    <br><br>
+        <!-- This is your camera icon input, it will directly open the camera on supported devices -->
+        <label for="photoFromCamera" class="btn">Use Camera<i class="fas fa-camera"></i></label>
+        <input type="file" id="photoFromCamera" name="photo" accept="image/*" capture="environment" style="display: none;">
+        <span id="photoName"></span>
       </fieldset>
-  
+    
       <input type="hidden" id="latitude" name="latitude">
       <input type="hidden" id="longitude" name="longitude">
       <button type="submit" id="submitBtn">Submit Report</button>
