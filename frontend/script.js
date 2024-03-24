@@ -63,7 +63,16 @@ $(document).ready(function() {
           subdomains: 'abcd',
           maxZoom: 19
       }).addTo(map);
-
+    // Add a button to zoom to the user's current location
+      L.control.locate({
+        position: 'topright', // Position of the button
+        flyTo: true, // Smoothly fly to the user's location
+        keepCurrentZoomLevel: false, // Zoom to the location if outside current view
+        locateOptions: {
+          maxZoom: 18 // Max zoom level when flying to the location
+        }
+      }).addTo(map);
+      
       // Define a blue dot marker using a divIcon
       var blueDot = L.divIcon({
         className: 'blue-dot',
@@ -71,7 +80,28 @@ $(document).ready(function() {
         iconSize: [10, 10],
         iconAnchor: [5, 5]
       });;
-
+      $('.search-box').keypress(function(e) {
+        if (e.which == 13) { // Enter key pressed
+            e.preventDefault();
+            const query = $(this).val().toLowerCase();
+            // Define the bounding box around Trinidad and Tobago
+            const viewbox = "-61.95,10.0,-60.2,11.4"; // left,bottom,right,top
+            // Construct the URL with the bounding box and bounded parameters
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${viewbox}&bounded=1`;
+    
+            $.getJSON(url, function(data) {
+                if (data.length > 0) {
+                    const place = data[0];
+                    map.flyTo([place.lat, place.lon], 14); // Adjust zoom level as needed
+                } else {
+                    alert("Location not found in Trinidad and Tobago.");
+                }
+            }).fail(function() {
+                alert("Error contacting the geocoding service.");
+            });
+        }
+    });
+    
       function addReportMarkers() {
         // Fetch report data from the server
         $.getJSON(url+'/reports', function(data) {
@@ -108,6 +138,8 @@ $(document).ready(function() {
     
         // Call the function to add markers to the map
         addReportMarkers();
+
+        
     }
 
     createMap()
