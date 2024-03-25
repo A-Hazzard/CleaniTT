@@ -27,10 +27,10 @@ const difficultyLevels = {
 // Define points levels required for each rank
 const rankPointsThresholds = {
   // earthSteward: 5000,
-  forestGuardian: 1000,
-  tree: 500,
-  sapling: 100,
   seedling: 0,
+  sapling: 100,
+  tree: 500,
+  forestGuardian: 1000
 };
 
 router.post("/reports", upload.single("photo"), async (req, res) => {
@@ -58,7 +58,7 @@ router.post("/reports", upload.single("photo"), async (req, res) => {
     // Check if user's total points exceed the threshold for a higher rank
     let userRank = user.rank;
     for (const [rank, threshold] of Object.entries(rankPointsThresholds)) {
-      if (totalPoints <= threshold) {
+      if (totalPoints >= threshold) {
         userRank = rank;
       }
     }
