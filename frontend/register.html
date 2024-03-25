@@ -88,7 +88,7 @@
           // Submit form data via AJAX
           $.ajax({
             type: "POST",
-            url: "http://localhost:3000/register",
+            url: "https://map-scanner-1.onrender.com/register",
             data: $(this).serialize(), // Serialize form data
             success: function (user) {
               localStorage.setItem("user", JSON.stringify(user));
