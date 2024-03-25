@@ -68,7 +68,7 @@
             Register
           </button>
           <p>
-            Already have an account? <a href="/frontend/login.html">Login</a>
+            Already have an account? <a href="/login.html">Login</a>
           </p>
         </form>
       </div>
@@ -92,8 +92,8 @@
             data: $(this).serialize(), // Serialize form data
             success: function (user) {
               localStorage.setItem("user", JSON.stringify(user));
-              // Redirect to /frontend/index.html upon successful registration
-              window.location.href = "/frontend/index.html";
+              // Redirect to /index.html upon successful registration
+              window.location.href = "/index.html";
             },
             error: function (xhr, status, error) {
               // Handle errors if any

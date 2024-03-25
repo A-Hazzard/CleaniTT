@@ -57,7 +57,7 @@
         </form>
         <div class="mt-3 text-center">
           <p>
-            Don't have an account? <a href="/frontend/register.html">Sign Up</a>
+            Don't have an account? <a href="/register.html">Sign Up</a>
           </p>
           <!-- <p><a href="/forgot-password">Forgot Password?</a></p> -->
         </div>
@@ -84,8 +84,8 @@
               console.log(user);
               localStorage.setItem("user", JSON.stringify(user));
 
-              // Redirect to /frontend/index.html upon successful login
-              window.location.href = "/frontend/index.html";
+              // Redirect to /index.html upon successful login
+              window.location.href = "/index.html";
             },
             error: function (xhr, status, error) {
               // Handle errors if any
