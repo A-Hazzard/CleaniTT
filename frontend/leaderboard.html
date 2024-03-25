@@ -9,24 +9,95 @@
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<!-- Locate Control CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+<!-- Leaflet.GeoSearch CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch/dist/geosearch.css" />
+<!-- Custom Styles -->
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<!-- Include jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Locate Control JS -->
+<script src="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+<!-- Leaflet.GeoSearch Bundle JS -->
+<script src="https://unpkg.com/leaflet-geosearch/dist/geosearch.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/18479e6558.js" crossorigin="anonymous"></script>
+
     <style>
       /* Custom styles */
       body {
         font-family: Arial, sans-serif;
         background-color: #f8f9fa;
       }
+      .top-bar {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.menu-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.search-box {
+  flex-grow: 1;
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+}
       .rank-image{
         width: 50px;
         height: 50px;
       }
     </style>
+    
   </head>
   <body>
+    <div class="top-bar">
+      <button class="menu-button" onclick="window.location.href='/frontend/profile.html'">
+        <i class="fas fa-user-circle"></i>Profile
+      </button>
+      <button class="menu-button" onclick="window.location.href='/frontend/leaderboard.html'">
+        <i class="fa-solid fa-trophy"></i></i>Leaderboard
+    </button>
+    
+    <button class="menu-button" onclick="window.location.href='/cleanitt'">
+      <i class="fa-solid fa-house"></i></i>Home
+    </button>
+    <button class="menu-button" onclick="window.location.href='/frontend/index.html'">
+      <i class="fa-solid fa-map"></i></i></i>Map
+    </button>
+      <input type="text" placeholder="Find address or place" class="search-box">
+      
+    </div>
     <div id="leaderboard"></div>
 
     <div class="mt-5 text-center">
+    <h1 style="color: green; margin-left: auto;margin-right: auto;">Help T&T and Climb to the Top!</h1>
+      
       <a href="index.html"
-        ><button class="btn btn-primary">Back to map</button>
+        ><button class="btn btn-primary">
+          Back to map</button>
       </a>
     </div>
 

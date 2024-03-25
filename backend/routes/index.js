@@ -331,6 +331,7 @@ router.get("/reports/:userId", async (req, res) => {
 router.get("/profile", async (req, res) => {
   try {
     const { userId } = req.query;
+    console.log(userId)
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });

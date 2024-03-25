@@ -76,7 +76,7 @@ $(document).ready(function () {
   Object.keys(difficultyLevels).forEach((material) => {
     const label = $(`<label for="${material}">${material}</label>`);
     const input = $(
-      `<input type="number" id="${material}" name="materials[${material}]" min="0" step="1" value="0">`
+      `<input style="margin-left: 1rem;" type="number" id="${material}" name="materials[${material}]" min="0" step="1" value="0"><br/>`
     );
     wasteMaterialsDiv.append(label, input);
   });
@@ -87,6 +87,18 @@ $(document).ready(function () {
       $("#photoName").text(" " + fileName);
     }
   });
+  $("#photoFromStorage").change(function() {
+    if (this.files && this.files[0]) {
+      // Get the file name
+      const fileName = this.files[0].name;
+      // Display the file name below the "Choose from storage" label
+      $("#storagePhotoName").text(fileName);
+    } else {
+      // Clear the file name if no file is selected
+      $("#storagePhotoName").text("");
+    }
+  });
+  
   function createMap() {
     var map = L.map("map").setView([10.4918, -61.3225], 11);
 
