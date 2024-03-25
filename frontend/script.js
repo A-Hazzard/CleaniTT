@@ -1,6 +1,6 @@
 $(document).ready(function () {
-  const url = "http://localhost:3000";
-  //  const url = 'https://map-scanner-1.onrender.com'
+  // const url = "http://localhost:3000";
+   const url = 'https://map-scanner-1.onrender.com'
 
   $("#reportForm").submit(function (e) {
     e.preventDefault();
