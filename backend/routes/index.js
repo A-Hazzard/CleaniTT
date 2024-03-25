@@ -29,7 +29,7 @@ const rankPointsThresholds = {
   // earthSteward: 5000,
   forestGuardian: 1000,
   tree: 500,
-  sapling: 100, 
+  sapling: 100,
   seedling: 0,
 };
 
@@ -48,13 +48,12 @@ router.post("/reports", upload.single("photo"), async (req, res) => {
       if (difficultyLevels.hasOwnProperty(material)) {
         totalPoints += materials[material] * difficultyLevels[material];
       }
-    } 
+    }
 
     // Update user's points
     const user = await User.findByIdAndUpdate(user_id, {
       $inc: { points: totalPoints },
     });
-
 
     // Check if user's total points exceed the threshold for a higher rank
     let userRank = user.rank;
@@ -100,20 +99,21 @@ router.post("/reports", upload.single("photo"), async (req, res) => {
       photo: uploadResponse.secure_url, // Use the secure URL returned by Cloudinary
       latitude,
       longitude,
-      userId: user_id
+      userId: user_id,
     });
-    await report.save()
-      .then(savedReport => {
-        console.log('Report saved successfully', savedReport);
+    await report
+      .save()
+      .then((savedReport) => {
+        console.log("Report saved successfully", savedReport);
         // Handle success, such as sending a response back to the client
       })
-      .catch(error => {
-        console.error('Error saving report', error);
+      .catch((error) => {
+        console.error("Error saving report", error);
         // Handle error, such as sending an error response to the client
       });
-  
-    console.log(report)
-  
+
+    console.log(report);
+
     res.status(201).send("Report saved");
   } catch (error) {
     console.error("Error saving report:", error.message);
@@ -135,13 +135,13 @@ router.get("/reports", async (req, res) => {
   function calculateClusters(reports, radius) {
     const clusters = [];
     const processedReportIds = new Set();
-  
+
     reports.forEach((report) => {
       // Skip if this report has already been processed as part of a cluster
       if (processedReportIds.has(report._id.toString())) {
         return;
       }
-  
+
       const nearbyReports = reports.filter((otherReport) => {
         // Do not compare the report with itself and skip already processed reports
         return (
@@ -149,21 +149,26 @@ router.get("/reports", async (req, res) => {
           !processedReportIds.has(otherReport._id.toString()) &&
           geolib.isPointWithinRadius(
             { latitude: report.latitude, longitude: report.longitude },
-            { latitude: otherReport.latitude, longitude: otherReport.longitude },
+            {
+              latitude: otherReport.latitude,
+              longitude: otherReport.longitude,
+            },
             radius
           )
         );
       });
-  
+
       // If at least 2 other reports are in the same area (3 reports make a cluster)
       if (nearbyReports.length >= 2) {
         // Mark all reports in this cluster as processed
-        nearbyReports.forEach((nr) => processedReportIds.add(nr._id.toString()));
+        nearbyReports.forEach((nr) =>
+          processedReportIds.add(nr._id.toString())
+        );
         processedReportIds.add(report._id.toString());
-  
+
         // Add the original report to the list
         nearbyReports.push(report);
-  
+
         // Calculate the center point of the cluster
         const averageCoords = geolib.getCenter(
           nearbyReports.map((r) => ({
@@ -171,7 +176,7 @@ router.get("/reports", async (req, res) => {
             longitude: r.longitude,
           }))
         );
-  
+
         // Add cluster to list
         clusters.push({
           center: averageCoords,
@@ -179,12 +184,10 @@ router.get("/reports", async (req, res) => {
         });
       } else console.log("no nearby reports");
     });
-  
+
     return clusters;
   }
 });
-
-
 
 router.post("/lazyReport", upload.single("photo"), async (req, res) => {
   try {
@@ -258,9 +261,9 @@ router.post("/lazyReport", upload.single("photo"), async (req, res) => {
 });
 router.get("/reports/:userId", async (req, res) => {
   try {
-    const reports = await Report.find({userId: req.params.userId});
+    const reports = await Report.find({ userId: req.params.userId });
     const clusters = calculateClusters(reports, 50);
-    console.log(clusters)
+    console.log(clusters);
     res.json({ reports, clusters });
   } catch (error) {
     console.error(error);
@@ -270,13 +273,13 @@ router.get("/reports/:userId", async (req, res) => {
   function calculateClusters(reports, radius) {
     const clusters = [];
     const processedReportIds = new Set();
-  
+
     reports.forEach((report) => {
       // Skip if this report has already been processed as part of a cluster
       if (processedReportIds.has(report._id.toString())) {
         return;
       }
-  
+
       const nearbyReports = reports.filter((otherReport) => {
         // Do not compare the report with itself and skip already processed reports
         return (
@@ -284,21 +287,26 @@ router.get("/reports/:userId", async (req, res) => {
           !processedReportIds.has(otherReport._id.toString()) &&
           geolib.isPointWithinRadius(
             { latitude: report.latitude, longitude: report.longitude },
-            { latitude: otherReport.latitude, longitude: otherReport.longitude },
+            {
+              latitude: otherReport.latitude,
+              longitude: otherReport.longitude,
+            },
             radius
           )
         );
       });
-  
+
       // If at least 2 other reports are in the same area (3 reports make a cluster)
       if (nearbyReports.length >= 2) {
         // Mark all reports in this cluster as processed
-        nearbyReports.forEach((nr) => processedReportIds.add(nr._id.toString()));
+        nearbyReports.forEach((nr) =>
+          processedReportIds.add(nr._id.toString())
+        );
         processedReportIds.add(report._id.toString());
-  
+
         // Add the original report to the list
         nearbyReports.push(report);
-  
+
         // Calculate the center point of the cluster
         const averageCoords = geolib.getCenter(
           nearbyReports.map((r) => ({
@@ -306,7 +314,7 @@ router.get("/reports/:userId", async (req, res) => {
             longitude: r.longitude,
           }))
         );
-  
+
         // Add cluster to list
         clusters.push({
           center: averageCoords,
@@ -314,12 +322,10 @@ router.get("/reports/:userId", async (req, res) => {
         });
       } else console.log("no nearby reports");
     });
-  
+
     return clusters;
   }
 });
-
-
 
 // Route to get user profile
 router.get("/profile", async (req, res) => {
@@ -399,6 +405,8 @@ router.get("/users", async (req, res) => {
       user.points = totalPoints;
       await user.save();
     }
+
+    users.sort((a, b) => b.points - a.points);
 
     res.status(200).json(users);
   } catch (error) {
