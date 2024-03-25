@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   rank: {
     type: String,
-    default: 'Beginner' // Default rank
+    default: 'seedling' // Default rank
   }
 });
 
