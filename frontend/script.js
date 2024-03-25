@@ -48,7 +48,9 @@ $(document).ready(function () {
           processData: false,
           success: function (data) {
             alert("Report submitted successfully!");
-
+            setTimeout(function () {
+              location.reload(); // Refresh the page to show the new report
+            }, 1000);
             // Reset the form or perform other actions after successful submission
           },
           error: function (xhr, status, error) {
