@@ -1,6 +1,6 @@
 $(document).ready(function() {
-  //  const url = 'http://localhost:3000'
-   const url = 'https://map-scanner-1.onrender.com'
+   const url = 'http://localhost:3000'
+  //  const url = 'https://map-scanner-1.onrender.com'
    
    $('#reportForm').submit(function(e) {
     e.preventDefault();
@@ -26,6 +26,13 @@ $(document).ready(function() {
         alert('Please select a photo.');
         return;
       }
+      console.log(JSON.parse(localStorage.getItem('user'))._id)
+    // Append waste materials data to formData
+      Object.keys(difficultyLevels).forEach(material => {
+        const value = parseInt($(`#${material}`).val()) || 0; // Ensure a valid number
+        formData.append(`materials[${material}]`, value);
+        formData.append('userID', JSON.parse(localStorage.getItem('user'))._id)
+      });
 
       $.ajax({
         url: url + '/reports',
@@ -46,7 +53,18 @@ $(document).ready(function() {
       alert('Error getting geolocation: ' + error.message);
     });
   });
+  const difficultyLevels = {
+    metal: 10, // Adjust points based on difficulty
+    plastic: 5,
+    // Add more materials and their corresponding points as needed
+  };
 
+  const wasteMaterialsDiv = $('#wasteMaterials');
+  Object.keys(difficultyLevels).forEach(material => {
+    const label = $(`<label for="${material}">${material}</label>`);
+    const input = $(`<input type="number" id="${material}" name="materials[${material}]" min="0" step="1" value="0">`);
+    wasteMaterialsDiv.append(label, input);
+  });
   // Handle file name display for the camera input
   $('#photoFromCamera').on('change', function() {
     if (this.files && this.files.length > 0) {

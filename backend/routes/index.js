@@ -24,19 +24,23 @@ const difficultyLevels = {
   plastic: 5,
   // Add more materials and their corresponding points as needed
 };
+// Define points levels required for each rank
+const rankPointsThresholds = {
+  // earthSteward: 5000,
+  forestGuardian: 1000,
+  tree: 500,
+  sapling: 100, 
+  seedling: 0,
+};
+
 router.post("/reports", upload.single("photo"), async (req, res) => {
   try {
     if (!req.file) {
       throw new Error("No file uploaded");
     }
 
-    let { description, latitude, longitude, materials } = req.body;
-
-    if (!materials || typeof materials !== "object") {
-      throw new Error("Invalid materials data");
-    }
-
-    let photoBuffer = req.file.buffer; // Access the file buffer directly
+    let { description, latitude, longitude, materials, userID } = req.body;
+    const user_id = userID[0];
 
     // Calculate total points earned based on reported waste materials
     let totalPoints = 0;
@@ -44,21 +48,36 @@ router.post("/reports", upload.single("photo"), async (req, res) => {
       if (difficultyLevels.hasOwnProperty(material)) {
         totalPoints += materials[material] * difficultyLevels[material];
       }
-    }
+    } 
 
     // Update user's points
-    await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findByIdAndUpdate(user_id, {
       $inc: { points: totalPoints },
     });
 
+
+    // Check if user's total points exceed the threshold for a higher rank
+    let userRank = user.rank;
+    for (const [rank, threshold] of Object.entries(rankPointsThresholds)) {
+      if (totalPoints <= threshold) {
+        userRank = rank;
+      }
+    }
+
+    // Update user's rank if it has changed
+    if (user.rank !== userRank) {
+      await User.findByIdAndUpdate(user_id, { rank: userRank });
+    }
+
     // Save activity
     await Activity.create({
-      userId: req.user._id,
+      userId: user_id,
       type: "report",
       points: totalPoints,
       // Additional fields as needed
     });
 
+    const photoBuffer = req.file.buffer;
     // Parse the EXIF data
     let parser = exifParser.create(photoBuffer);
     let result = parser.parse();
@@ -84,6 +103,11 @@ router.post("/reports", upload.single("photo"), async (req, res) => {
     });
     await report.save();
 
+    console.log(`
+    Type of activity: Report\n
+    Earned ${totalPoints} points,\n
+    Rank ${userRank} (${user.points} points)
+  `)
     res.status(201).send("Report saved");
   } catch (error) {
     console.error("Error saving report:", error.message);
@@ -242,20 +266,6 @@ router.get("/profile", async (req, res) => {
 });
 
 // Update User Profile
-router.put("/user/:id", async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!updatedUser) {
-      return res.status(404).send("User not found");
-    }
-    res.json(updatedUser);
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-});
-
 // Register route
 router.post("/register", async (req, res) => {
   try {

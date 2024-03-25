@@ -36,7 +36,7 @@
   <div class="sidebar">
     <form id="reportForm" enctype="multipart/form-data">
       <label for="description">Description:</label>
-      <textarea id="description" name="description" required></textarea>
+      <textarea id="description" name="description" ></textarea>
     
       <fieldset>
         <legend>Photo:</legend>
@@ -44,7 +44,7 @@
         <!-- This is your "Choose from storage" input -->
         <label for="photoFromStorage" class="btn">Choose from storage</label>
         <input type="file" id="photoFromStorage" name="photo" accept="image/*">
-    <br><br>
+        <br><br>
         <!-- This is your camera icon input, it will directly open the camera on supported devices -->
         <label for="photoFromCamera" class="btn">Use Camera<i class="fas fa-camera"></i></label>
         <input type="file" id="photoFromCamera" name="photo" accept="image/*" capture="environment" style="display: none;">
@@ -53,8 +53,16 @@
     
       <input type="hidden" id="latitude" name="latitude">
       <input type="hidden" id="longitude" name="longitude">
+    
+      <!-- Dynamic input fields for waste materials -->
+      <fieldset>
+        <legend>Waste Materials:</legend>
+        <div id="wasteMaterials"></div>
+      </fieldset>
+    
       <button type="submit" id="submitBtn">Submit Report</button>
     </form>
+    
 
     <form id="lazyReportForm" enctype="multipart/form-data">
       <h2>Not at the location where you took the photo?</h2>

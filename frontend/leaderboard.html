@@ -15,6 +15,10 @@
         font-family: Arial, sans-serif;
         background-color: #f8f9fa;
       }
+      .rank-image{
+        width: 50px;
+        height: 50px;
+      }
     </style>
   </head>
   <body>
@@ -50,35 +54,60 @@
       });
 
       // Function to render user data on the page
-      function renderUserData(users) {
+      
+     // Function to render user data on the page
+    function renderUserData(users) {
         let htmlContent = `
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Username</th>
-          <th scope="col">Points</th>
-          <th scope="col">Rank</th>
-        </tr>
-      </thead>
-      <tbody>`;
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">Points</th>
+                <th scope="col">Rank</th>
+                <th scope="col"></th> <!-- New column for the rank image -->
+              </tr>
+            </thead>
+            <tbody>`;
 
-        users.forEach((user, index) => {
-          htmlContent += `
-      <tr>
-        <th scope="row">${index + 1}</th>
-        <td>${user.username}</td>
-        <td>${user.points}</td>
-        <td>${user.rank}</td>
-      </tr>`;
-        });
+      users.forEach((user, index) => {
+        // Dynamically generate the rank image tag for the current user
+        let rankImageTag;
+        switch (user.rank) {
+          case 'seedling':
+            rankImageTag = `<img class="rank-image" src="./images/seedling.webp" alt="Seedling" />`;
+            break;
+          case 'sapling':
+            rankImageTag = `<img class="rank-image" src="./images/sapling.webp" alt="Sapling" />`;
+            break;
+          case 'tree':
+            rankImageTag = `<img class="rank-image" src="./images/tree.webp" alt="Tree" />`;
+            break;
+          case 'forestGuardian':
+            rankImageTag = `<img class="rank-image" src="./images/forest guardian.webp" alt="Forest Guardian" />`;
+            break;
+          default:
+            rankImageTag = ''; // Handle unknown rank
+        }
 
+        // Append the user data and rank image tag to the HTML content
         htmlContent += `
-      </tbody>
-    </table>`;
+          <tr>
+            <th scope="row">${index + 1}</th>
+            <td>${user.username}</td>
+            <td>${user.points}</td>
+            <td>${user.rank}</td>
+            <td>${rankImageTag}</td> <!-- Append the rank image tag to the row -->
+          </tr>`;
+      });
 
-        $("#leaderboard").html(htmlContent);
-      }
+      htmlContent += `
+          </tbody>
+        </table>`;
+
+      $("#leaderboard").html(htmlContent);
+}
+
     </script>
   </body>
 </html>
